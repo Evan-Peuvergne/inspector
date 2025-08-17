@@ -1,12 +1,8 @@
+import type { Modes, DOMManagerEvents } from "./types"
+
 import { DOMManagerMode } from "./modes/base"
 import { NavigateMode } from "./modes/navigate"
 import { CommentMode } from "./modes/comment"
-
-export type Modes = "navigate" | "comment"
-
-export interface DOMManagerEvents {
-  modeChanged: (newMode: Modes) => void
-}
 
 export const MODES: { [key in Modes]: typeof DOMManagerMode } = {
   navigate: NavigateMode,

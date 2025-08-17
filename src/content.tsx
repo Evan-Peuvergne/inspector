@@ -7,7 +7,7 @@ import { CacheProvider } from "@emotion/react"
 
 import { ManagerProvider } from "~manager/context"
 
-import { App } from "~app"
+import { App } from "~content"
 
 const styleElement = document.createElement("style")
 const styleCache = createCache({
@@ -43,5 +43,5 @@ export default () => {
 }
 
 export const config: PlasmoCSConfig = {
-  matches: ["<all_urls>"]
+  matches: ["https://matera.eu/*"]
 }
