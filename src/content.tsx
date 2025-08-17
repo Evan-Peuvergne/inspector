@@ -7,7 +7,7 @@ import { CacheProvider } from "@emotion/react"
 
 import { ManagerProvider } from "~manager/context"
 
-import { App } from "~content"
+import { App } from "~app"
 
 const styleElement = document.createElement("style")
 const styleCache = createCache({
