@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 
 const BORDER = 4
+const ZINDEX = 100000
 
 export const Comment = styled.span`
   position: absolute;
@@ -8,11 +9,12 @@ export const Comment = styled.span`
   width: 20px;
   height: 20px;
   background: red;
+  pointer-events: all;
 `
 
 export const Stage = styled.div`
   position: absolute;
-  z-index: 999999999999;
+  z-index: ${ZINDEX + 2};
   pointer-events: none;
 `
 
@@ -30,11 +32,12 @@ export const ToolbarButton = styled.button<{ active?: boolean }>`
   background: ${(p) => (p.active ? "rgba(255, 255, 255, 0.16)" : "none")};
   appearance: none;
   cursor: pointer;
+  pointer-events: all;
 `
 
 export const Toolbar = styled.div`
   position: fixed;
-  z-index: 999999999999;
+  z-index: ${ZINDEX + 3};
   top: calc(100vh - 4px);
   left: 50vw;
   transform: translate3d(-50%, -100%, 0);
@@ -43,14 +46,25 @@ export const Toolbar = styled.div`
   padding: 8px 8px 4px 8px;
   background: rgba(0, 0, 0, 0.88);
   backdrop-filter: blur(8px);
-  pointer-events: all;
+  pointer-events: all !important;
+`
+
+export const Backdrop = styled.span<{ $intercept: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: ${ZINDEX + 1};
+  pointer-events: ${(p) => (p.$intercept ? "all" : "none")};
 `
 
 export const Container = styled.div`
   pointer-events: none;
+
   &:after {
     position: fixed;
-    z-index: 999999999999;
+    z-index: ${ZINDEX};
     top: 0;
     left: 0;
     right: 0;

@@ -14,7 +14,7 @@ const ManagerContext = createContext<DOMManagerContext | null>(null)
 
 let managerInstance: DOMManager | null = null
 
-const getManagerInstance = (): DOMManager => {
+export const getManager = (): DOMManager => {
   if (!managerInstance) managerInstance = new DOMManager()
   return managerInstance
 }
@@ -25,7 +25,7 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({
   const [currentMode, setCurrentMode] = useState<Modes>("navigate")
 
   useEffect(() => {
-    const manager = getManagerInstance()
+    const manager = getManager()
     setCurrentMode(manager.getCurrentModeID())
 
     const handleModeChange = (newMode: Modes) => setCurrentMode(newMode)
@@ -35,7 +35,7 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [])
 
   const setMode = useCallback((mode: Modes) => {
-    const manager = getManagerInstance()
+    const manager = getManager()
     manager.setMode(mode)
   }, [])
 

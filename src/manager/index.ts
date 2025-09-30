@@ -13,9 +13,13 @@ export class DOMManager {
   private currentMode: DOMManagerMode
   private modes: Record<Modes, DOMManagerMode>
   private eventListeners: Map<keyof DOMManagerEvents, Set<Function>> = new Map()
+  private $backdrop: HTMLElement | null = null
 
   constructor() {
-    this.modes = { navigate: new NavigateMode(), comment: new CommentMode() }
+    this.modes = {
+      navigate: new NavigateMode(this),
+      comment: new CommentMode(this)
+    }
 
     this.currentMode = this.modes.navigate
     this.currentMode.activate()
@@ -34,6 +38,24 @@ export class DOMManager {
     this.currentMode.activate()
 
     this.emit("modeChanged", mode)
+  }
+
+  setBackdrop($backdrop: HTMLElement | null) {
+    if (this.$backdrop)
+      this.$backdrop.removeEventListener("click", this._onStageClick, true)
+
+    this.$backdrop = $backdrop
+    if (this.$backdrop) {
+      this.$backdrop.addEventListener("click", this._onStageClick, true)
+    }
+  }
+
+  private _onStageClick = (e: MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.stopImmediatePropagation()
+
+    this.emit("stageClick", e)
   }
 
   on<K extends keyof DOMManagerEvents>(

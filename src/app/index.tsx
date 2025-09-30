@@ -1,11 +1,19 @@
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 
 import * as Styles from "./styles"
 
-import { useMode } from "~manager/context"
+import { useMode, getManager } from "~manager/context"
 
 export const App = () => {
   const [mode, setMode] = useMode()
+
+  const manager = getManager()
+  const $backdrop = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    getManager().setBackdrop($backdrop.current)
+    return () => getManager().setBackdrop(null)
+  }, [])
 
   return (
     <Styles.Container>
@@ -24,6 +32,7 @@ export const App = () => {
       <Styles.Stage>
         <Styles.Comment style={{ left: 280, top: 100 }} />
       </Styles.Stage>
+      <Styles.Backdrop $intercept={mode !== "navigate"} ref={$backdrop} />
     </Styles.Container>
   )
 }
