@@ -1,8 +1,8 @@
-import type { Modes, DOMManagerEvents } from "./types"
-
 import { DOMManagerMode } from "./modes/base"
 import { NavigateMode } from "./modes/navigate"
 import { CommentMode } from "./modes/comment"
+
+import type { Modes, DOMManagerEvents, Comment } from "./types"
 
 export const MODES: { [key in Modes]: typeof DOMManagerMode } = {
   navigate: NavigateMode,
@@ -12,8 +12,11 @@ export const MODES: { [key in Modes]: typeof DOMManagerMode } = {
 export class DOMManager {
   private currentMode: DOMManagerMode
   private modes: Record<Modes, DOMManagerMode>
+  private comments: Comment[] = []
+
   private eventListeners: Map<keyof DOMManagerEvents, Set<Function>> = new Map()
-  private $backdrop: HTMLElement | null = null
+
+  public $backdrop: HTMLElement | null = null
 
   constructor() {
     this.modes = {
@@ -41,21 +44,15 @@ export class DOMManager {
   }
 
   setBackdrop($backdrop: HTMLElement | null) {
-    if (this.$backdrop)
-      this.$backdrop.removeEventListener("click", this._onStageClick, true)
-
     this.$backdrop = $backdrop
-    if (this.$backdrop) {
-      this.$backdrop.addEventListener("click", this._onStageClick, true)
-    }
   }
 
-  private _onStageClick = (e: MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    e.stopImmediatePropagation()
+  getComments(): Comment[] {
+    return this.comments
+  }
 
-    this.emit("stageClick", e)
+  setComments(comments: Comment[]): void {
+    this.comments = comments
   }
 
   on<K extends keyof DOMManagerEvents>(
@@ -74,7 +71,7 @@ export class DOMManager {
     this.eventListeners.get(event)?.delete(listener)
   }
 
-  private emit<K extends keyof DOMManagerEvents>(
+  emit<K extends keyof DOMManagerEvents>(
     event: K,
     ...args: Parameters<DOMManagerEvents[K]>
   ): void {

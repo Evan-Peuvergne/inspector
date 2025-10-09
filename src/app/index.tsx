@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from "react"
 
 import * as Styles from "./styles"
 
-import { useMode, getManager } from "~manager/context"
+import { useMode, useComments, getManager } from "~manager/context"
 
 export const App = () => {
   const [mode, setMode] = useMode()
+  const { comments } = useComments()
 
   const manager = getManager()
   const $backdrop = useRef<HTMLSpanElement>(null)
@@ -30,7 +31,12 @@ export const App = () => {
         </Styles.ToolbarButton>
       </Styles.Toolbar>
       <Styles.Stage>
-        <Styles.Comment style={{ left: 280, top: 100 }} />
+        {comments.map((c) => (
+          <Styles.Comment
+            style={{ left: c.position.x, top: c.position.y }}
+            key={c.id}
+          />
+        ))}
       </Styles.Stage>
       <Styles.Backdrop $intercept={mode !== "navigate"} ref={$backdrop} />
     </Styles.Container>
