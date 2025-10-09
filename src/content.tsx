@@ -43,5 +43,5 @@ export default () => {
 }
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://matera.eu/*"]
+  matches: ["<all_urls>"]
 }
