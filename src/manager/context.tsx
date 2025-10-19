@@ -3,13 +3,14 @@ import { createContext, useContext } from "react"
 
 import { DOMManager } from "./"
 
-import type { Modes, Comment } from "./types"
+import type { Modes, Comment, Draft } from "./types"
 import { get } from "http"
 
 interface DOMManagerContext {
   currentMode: Modes
   setMode: (mode: Modes) => void
   comments: Comment[]
+  subscribeDrafts: (callback: (draft: Draft) => void) => () => void
 }
 
 const ManagerContext = createContext<DOMManagerContext | null>(null)
@@ -52,8 +53,15 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({
     manager.setMode(mode)
   }, [])
 
+  const subscribeDrafts = useCallback((listener: (draft: Draft) => void) => {
+    const manager = getManager()
+    manager.on("draftRequested", listener)
+    return () => manager.off("draftRequested", listener)
+  }, [])
+
   return (
-    <ManagerContext.Provider value={{ currentMode, setMode, comments }}>
+    <ManagerContext.Provider
+      value={{ currentMode, setMode, comments, subscribeDrafts }}>
       {children}
     </ManagerContext.Provider>
   )
@@ -71,4 +79,16 @@ export const useComments = () => {
   if (!ctx) throw new Error("useComments must be used within a ManagerProvider")
 
   return { comments: ctx.comments }
+}
+
+export const useDrafts = () => {
+  const ctx = useContext(ManagerContext)
+  if (!ctx) throw new Error("useDrafts must be used within a ManagerProvider")
+
+  const [draft, setDraft] = useState<Draft | null>(null)
+  useEffect(() => ctx.subscribeDrafts(setDraft), [ctx])
+
+  const reset = useCallback(() => setDraft(null), [])
+
+  return { draft, reset }
 }

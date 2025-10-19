@@ -23,17 +23,12 @@ export class CommentMode extends DOMManagerMode {
     e.preventDefault()
     e.stopPropagation()
 
-    this.manager.setComments([
-      ...this.manager.getComments(),
-      {
-        id: crypto.randomUUID(),
-        position: {
-          x: window.scrollX + e.clientX,
-          y: window.scrollY + e.clientY
-        },
-        content: ""
+    this.manager.emit("draftRequested", {
+      type: "comment",
+      position: {
+        x: window.scrollX + e.clientX,
+        y: window.scrollY + e.clientY
       }
-    ])
-    this.manager.emit("commentsChanged", this.manager.getComments())
+    })
   }
 }

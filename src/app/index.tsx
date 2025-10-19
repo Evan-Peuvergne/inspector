@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react"
 
 import * as Styles from "./styles"
+import { Comment } from "./comment"
 
-import { useMode, useComments, getManager } from "~manager/context"
+import { useMode, useComments, useDrafts, getManager } from "~manager/context"
 
 export const App = () => {
   const [mode, setMode] = useMode()
@@ -15,6 +16,8 @@ export const App = () => {
     getManager().setBackdrop($backdrop.current)
     return () => getManager().setBackdrop(null)
   }, [])
+
+  const { draft, reset } = useDrafts()
 
   return (
     <Styles.Container>
@@ -37,8 +40,12 @@ export const App = () => {
             key={c.id}
           />
         ))}
+        {draft && <Comment position={draft.position} />}
       </Styles.Stage>
-      <Styles.Backdrop $intercept={mode !== "navigate"} ref={$backdrop} />
+      <Styles.Backdrop
+        $intercept={mode !== "navigate" && !draft}
+        ref={$backdrop}
+      />
     </Styles.Container>
   )
 }
