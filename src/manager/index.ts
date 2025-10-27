@@ -2,7 +2,8 @@ import { DOMManagerMode } from "./modes/base"
 import { NavigateMode } from "./modes/navigate"
 import { CommentMode } from "./modes/comment"
 
-import type { Modes, DOMManagerEvents, Comment } from "./types"
+import type { Modes, DOMManagerEvents } from "./types"
+import type { Position, Comment } from "~types"
 
 export const MODES: { [key in Modes]: typeof DOMManagerMode } = {
   navigate: NavigateMode,
@@ -48,11 +49,20 @@ export class DOMManager {
   }
 
   getComments(): Comment[] {
-    return this.comments
+    return [...this.comments]
   }
 
   setComments(comments: Comment[]): void {
     this.comments = comments
+
+    this.emit("commentsChanged", this.getComments())
+  }
+
+  confirmComment(position: Position, content: string): void {
+    this.setComments([
+      ...this.getComments(),
+      { id: crypto.randomUUID(), position, content }
+    ])
   }
 
   on<K extends keyof DOMManagerEvents>(

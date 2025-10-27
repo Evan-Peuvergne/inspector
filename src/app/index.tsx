@@ -17,7 +17,7 @@ export const App = () => {
     return () => getManager().setBackdrop(null)
   }, [])
 
-  const { draft, reset } = useDrafts()
+  const { draft, reset, confirm } = useDrafts()
 
   return (
     <Styles.Container>
@@ -40,10 +40,10 @@ export const App = () => {
             key={c.id}
           />
         ))}
-        {draft && <Comment position={draft.position} />}
+        {draft && <Comment position={draft.position} onSubmit={confirm} />}
       </Styles.Stage>
       <Styles.Backdrop
-        $intercept={mode !== "navigate" && !draft}
+        $intercept={mode !== "navigate" || !!draft}
         ref={$backdrop}
       />
     </Styles.Container>
