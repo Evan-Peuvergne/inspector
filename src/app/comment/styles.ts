@@ -10,6 +10,8 @@ export const Anchor = styled.span<{ x: number; y: number }>`
   height: ${COMMENT_RADIUS}px;
   background: red;
   border-radius: 100%;
+  pointer-events: all;
+  cursor: pointer;
 `
 
 export const Overlay = styled.div`

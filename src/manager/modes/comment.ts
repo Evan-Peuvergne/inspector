@@ -24,11 +24,8 @@ export class CommentMode extends DOMManagerMode {
     e.stopPropagation()
 
     this.manager.emit("draftRequested", {
-      type: "comment",
-      position: {
-        x: window.scrollX + e.clientX,
-        y: window.scrollY + e.clientY
-      }
+      x: window.scrollX + e.clientX,
+      y: window.scrollY + e.clientY
     })
   }
 }

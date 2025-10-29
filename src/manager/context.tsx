@@ -3,15 +3,15 @@ import { createContext, useContext } from "react"
 
 import { DOMManager } from "./"
 
-import type { Modes, Draft } from "./types"
-import type { Comment, Position } from "~types"
+import type { Modes } from "./types"
+import type { Comment, Draft, Position } from "~types"
 import { get } from "http"
 
 interface DOMManagerContext {
   currentMode: Modes
   setMode: (mode: Modes) => void
   comments: Comment[]
-  subscribeDrafts: (callback: (draft: Draft) => void) => () => void
+  subscribeDrafts: (callback: (position: Position) => void) => () => void
   confirmComment: (position: Position, content: string) => void
 }
 
@@ -55,11 +55,14 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({
     manager.setMode(mode)
   }, [])
 
-  const subscribeDrafts = useCallback((listener: (draft: Draft) => void) => {
-    const manager = getManager()
-    manager.on("draftRequested", listener)
-    return () => manager.off("draftRequested", listener)
-  }, [])
+  const subscribeDrafts = useCallback(
+    (listener: (position: Position) => void) => {
+      const manager = getManager()
+      manager.on("draftRequested", listener)
+      return () => manager.off("draftRequested", listener)
+    },
+    []
+  )
 
   const confirmComment = useCallback((position: Position, content: string) => {
     const manager = getManager()
@@ -100,7 +103,10 @@ export const useDrafts = () => {
 
   const [draft, setDraft] = useState<Draft | null>(null)
   useEffect(
-    () => ctx.subscribeDrafts((d) => setDraft((s) => (s === null ? d : s))),
+    () =>
+      ctx.subscribeDrafts((d) =>
+        setDraft((s) => (s === null ? { position: d, content: "" } : s))
+      ),
     [ctx]
   )
 

@@ -13,3 +13,5 @@ export type Comment = {
   position: Position
   content: string
 }
+
+export type Draft = Omit<Comment, "id">

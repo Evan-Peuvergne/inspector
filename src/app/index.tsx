@@ -8,6 +8,7 @@ import { useMode, useComments, useDrafts, getManager } from "~manager/context"
 export const App = () => {
   const [mode, setMode] = useMode()
   const { comments } = useComments()
+  const [current, setCurrent] = useState<string | null>(null)
 
   const manager = getManager()
   const $backdrop = useRef<HTMLSpanElement>(null)
@@ -35,15 +36,29 @@ export const App = () => {
       </Styles.Toolbar>
       <Styles.Stage>
         {comments.map((c) => (
-          <Styles.Comment
-            style={{ left: c.position.x, top: c.position.y }}
+          <Comment
+            data={c}
+            opened={c.id === current}
+            onAnchorClick={(s) => (s ? setCurrent(null) : setCurrent(c.id))}
+            onClose={() => setCurrent(null)}
+            onSubmit={console.log}
             key={c.id}
           />
         ))}
-        {draft && <Comment position={draft.position} onSubmit={confirm} />}
+        {draft && (
+          <Comment
+            opened
+            data={draft}
+            onClose={() => reset()}
+            onSubmit={(c) => {
+              confirm(c)
+              setMode("navigate")
+            }}
+          />
+        )}
       </Styles.Stage>
       <Styles.Backdrop
-        $intercept={mode !== "navigate" || !!draft}
+        $intercept={mode !== "navigate" || !!draft || !!current}
         ref={$backdrop}
       />
     </Styles.Container>
